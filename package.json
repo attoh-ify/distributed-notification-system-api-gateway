@@ -27,6 +27,7 @@
     "@nestjs/jwt": "^11.0.1",
     "@nestjs/passport": "^11.0.5",
     "@nestjs/platform-express": "^11.0.1",
+    "@nestjs/sequelize": "^11.0.1",
     "amqplib": "^0.10.9",
     "http-proxy-middleware": "^3.0.5",
     "ioredis": "^5.8.2",
