@@ -1,26 +1,36 @@
-import { Module } from "@nestjs/common";
-import { ConfigModule } from "@nestjs/config";
-import { SequelizeModule } from "@nestjs/sequelize";
-import { HealthModule } from "./health/health.module";
-import { StatusLog } from "./models/status-log.model";
-
+import { Module } from '@nestjs/common';
+import { ConfigModule, ConfigService } from '@nestjs/config';
+import { SequelizeModule } from '@nestjs/sequelize';
+import { HealthModule } from './health/health.module';
+import { StatusLog } from './models/status-log.model';
+import appConfig from './config/app.config';
 
 @Module({
   imports: [
-    ConfigModule.forRoot({ isGlobal: true }),
-    SequelizeModule.forRoot({
-      dialect: "postgres",
-      host: process.env.DB_HOST,
-      port: parseInt(process.env.DB_PORT || "5432", 10),
-      username: process.env.DB_USER,
-      password: process.env.DB_PASS,
-      database: process.env.DB_PASS,
-      autoLoadModels: true,
-      synchronize: true,
-      models: [StatusLog],
-      logging: false,
+    ConfigModule.forRoot({
+      isGlobal: true,
+      load: [appConfig],
     }),
-    HealthModule
+    SequelizeModule.forRootAsync({
+      imports: [ConfigModule],
+      inject: [ConfigService],
+      useFactory: (config: ConfigService) => {
+        const db = config.get('database');
+        return {
+          dialect: db.dialect,
+          host: db.host,
+          port: db.port,
+          username: db.username,
+          password: db.password,
+          database: db.name,
+          autoLoadModels: true,
+          synchronize: true,
+          models: [StatusLog],
+          logging: false,
+        };
+      },
+    }),
+    HealthModule,
   ],
 })
-export class AppModule {};
+export class AppModule {}

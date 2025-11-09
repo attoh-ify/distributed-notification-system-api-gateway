@@ -1,0 +1,31 @@
+import * as dotenv from "dotenv";
+dotenv.config();
+
+export default () => ({
+  app: {
+    name: process.env.APP_NAME || 'notification-gateway',
+    port: parseInt(process.env.PORT || '3000', 10),
+    env: process.env.NODE_ENV || 'development',
+  },
+  database: {
+    dialect: 'postgres',
+    host: process.env.DB_HOST || 'localhost',
+    port: parseInt(process.env.DB_PORT || '5432', 10),
+    username: process.env.DB_USER || 'postgres',
+    password: process.env.DB_PASS || 'postgres',
+    name: process.env.DB_NAME || 'notifications',
+  },
+  rabbitmq: {
+    url: process.env.RABBITMQ_URL || 'amqp://localhost:5672',
+    emailQueue: process.env.EMAIL_QUEUE || 'email.queue',
+    pushQueue: process.env.PUSH_QUEUE || 'push.queue',
+  },
+  redis: {
+    url: process.env.REDIS_URL || 'redis://localhost:6379',
+    host: process.env.REDIS_HOST || '127.0.0.1',
+    port: parseInt(process.env.REDIS_PORT || '6379', 10),
+  },
+  jwt: {
+    secret: process.env.JWT_SECRET || 'supersecret',
+  },
+});
