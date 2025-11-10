@@ -7,6 +7,7 @@ import appConfig from './config/app.config';
 import { RabbitMQModule } from './rabbitmq/rabbitmq.module';
 import { RedisModule } from './redis/redis.module';
 import { ProxyModule } from './proxy/proxy.module';
+import { NotificationModule } from './notification/notification.module';
 
 @Module({
   imports: [
@@ -37,6 +38,7 @@ import { ProxyModule } from './proxy/proxy.module';
     RabbitMQModule,
     RedisModule,
     ProxyModule,
+    NotificationModule,
   ],
 })
 export class AppModule {}
