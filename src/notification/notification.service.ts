@@ -2,6 +2,7 @@ import { Injectable, OnModuleInit, OnModuleDestroy } from '@nestjs/common';
 import * as amqp from 'amqplib';
 import { ConfigService } from '@nestjs/config';
 import { v4 as uuidv4 } from 'uuid';
+import { MessageDto, NotificationDto } from 'src/dto/notification.dto';
 
 @Injectable()
 export class NotificationService implements OnModuleInit, OnModuleDestroy {
@@ -29,27 +30,33 @@ export class NotificationService implements OnModuleInit, OnModuleDestroy {
     console.log('🧹 RabbitMQ connection closed');
   }
 
-  async sendNotification(payload: {
-    type: 'email' | 'push';
-    recipient: string;
-    data: Record<string, any>;
-  }) {
-    const { type, recipient, data } = payload;
+  async sendNotification(payload: NotificationDto) {
+    const { type, recipient, template_id, template_vars, title, body, data } = payload;
     const notification_id = uuidv4();
-    console.log('id: ', notification_id);
 
-    const message = {
+    const message: MessageDto = {
       notification_id,
+      type,
       recipient,
+      template_id,
+      template_vars,
+      title,
+      body,
       data,
       created_at: new Date().toISOString(),
     };
 
     const queue =
-      type === 'email' ? 'email.queue' : type === 'push' ? 'push.queue' : null;
+      type === 'email' ? this.config.get<string>('rabbitmq.emailQueue') : type === 'push' ? this.config.get<string>('rabbitmq.pushQueue') : null;
     if (!queue) throw new Error('Invalid notification type');
 
-    await this.channel.assertQueue(queue, { durable: true });
+    await this.channel.assertQueue(queue, {
+      durable: true,
+      arguments: {
+        'x-dead-letter-exchange': 'notifications.direct',
+        'x-dead-letter-routing-key': 'failed.queue'
+      },
+    });
     this.channel.sendToQueue(queue, Buffer.from(JSON.stringify(message)), {
       persistent: true,
     });
