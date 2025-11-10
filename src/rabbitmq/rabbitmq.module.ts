@@ -9,7 +9,6 @@ import * as amqp from "amqplib";
             provide: "RABBITMQ_CONNECTION",
             useFactory: async (config: ConfigService) => {
                 const url = config.get<string>('rabbitmq.url') || 'amqp://localhost:5672';
-                console.log("REDIS URL: ", url);
                 const connection = await amqp.connect(url);
                 return connection;
             },
