@@ -47,7 +47,7 @@ export class NotificationService implements OnModuleInit, OnModuleDestroy {
     };
 
     const queue =
-      type === 'email' ? this.config.get<string>('rabbitmq.emailQueue') : type === 'push' ? this.config.get<string>('rabbitmq.pushQueue') : null;
+      type === 'email' ? this.config.get<string>('rabbitmq.email_queue') : type === 'push' ? this.config.get<string>('rabbitmq.push_queue') : null;
     if (!queue) throw new Error('Invalid notification type');
 
     await this.channel.assertQueue(queue, {

@@ -9,6 +9,7 @@ import { RedisModule } from './redis/redis.module';
 import { ProxyModule } from './proxy/proxy.module';
 import { NotificationModule } from './notification/notification.module';
 import { StatusModule } from './status/status.module';
+import { ConsumerModule } from './consumer/consumer.module';
 
 @Module({
   imports: [
@@ -41,6 +42,7 @@ import { StatusModule } from './status/status.module';
     ProxyModule,
     NotificationModule,
     StatusModule,
+    ConsumerModule,
   ],
 })
 export class AppModule {}

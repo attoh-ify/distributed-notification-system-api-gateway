@@ -23,8 +23,9 @@ export default () => ({
   },
   rabbitmq: {
     url: process.env.RABBITMQ_URL || 'amqp://localhost:5672',
-    emailQueue: process.env.EMAIL_QUEUE || 'email.queue',
-    pushQueue: process.env.PUSH_QUEUE || 'push.queue',
+    email_queue: process.env.EMAIL_QUEUE || 'email.queue',
+    push_queue: process.env.PUSH_QUEUE || 'push.queue',
+    status_queue: process.env.STATUS_QUEUE || 'status.queue',
   },
   redis: {
     url: process.env.REDIS_URL || 'redis://localhost:6379',
