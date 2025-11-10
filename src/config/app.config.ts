@@ -7,6 +7,12 @@ export default () => ({
     port: parseInt(process.env.PORT || '3000', 10),
     env: process.env.NODE_ENV || 'development',
   },
+  services: {
+    user_service_url: process.env.USER_SERVICE_URL,
+    email_service_url: process.env.EMAIL_SERVICE_URL,
+    push_service_url: process.env.PUSH_SERVICE_URL,
+    template_service_url: process.env.TEMPLATE_SERVICE_URL,
+  },
   database: {
     dialect: 'postgres',
     host: process.env.DB_HOST || 'localhost',

@@ -4,6 +4,9 @@ import { SequelizeModule } from '@nestjs/sequelize';
 import { HealthModule } from './health/health.module';
 import { StatusLog } from './models/status-log.model';
 import appConfig from './config/app.config';
+import { RabbitMQModule } from './rabbitmq/rabbitmq.module';
+import { RedisModule } from './redis/redis.module';
+import { ProxyModule } from './proxy/proxy.module';
 
 @Module({
   imports: [
@@ -31,6 +34,9 @@ import appConfig from './config/app.config';
       },
     }),
     HealthModule,
+    RabbitMQModule,
+    RedisModule,
+    ProxyModule,
   ],
 })
 export class AppModule {}
