@@ -27,9 +27,9 @@ export class StatusLog extends Model<StatusLogAttributes, Omit<StatusLogAttribut
 
     @AllowNull(false)
     @Column(DataType.STRING)
-    notification_id: string;
+    declare notification_id: string;
 
     @AllowNull(false)
     @Column(DataType.STRING)
-    status: string;
+    declare status: string;
 }
