@@ -1,33 +1,58 @@
 import { Inject, Injectable } from '@nestjs/common';
+import { InjectModel } from '@nestjs/sequelize';
 import Redis from 'ioredis';
+import { StatusLog } from 'src/models/status-log.model';
 
 @Injectable()
 export class StatusService {
-  constructor(@Inject('REDIS_CLIENT') private readonly redisClient: Redis) {}
+  constructor(
+    @Inject('REDIS_CLIENT') private readonly redisClient: Redis,
+    @InjectModel(StatusLog) private readonly statusLogModel: typeof StatusLog,
+  ) {}
 
-  async setStatus(notificationId: string, status: string) {
+  async setStatus(notification_id: string, status: string) {
+    const timestamp = new Date().toISOString();
     await this.redisClient.hset(
-      `notification:${notificationId}`,
+      `notification:${notification_id}`,
       'status',
       status,
-    );
-    await this.redisClient.hset(
-      `notification:${notificationId}`,
       'last_updated',
-      new Date().toISOString(),
+      timestamp,
     );
+
+    await this.statusLogModel.create({
+      notification_id,
+      status,
+    });
   }
 
-  async getStatus(notificationId: string) {
-    const data = await this.redisClient.hgetall(
-      `notification:${notificationId}`,
+  async getStatus(notification_id: string) {
+    const cached = await this.redisClient.hgetall(
+      `notification:${notification_id}`,
     );
-    if (!data || !data.status) {
+    if (cached && cached.status) {
       return {
+        notification_id,
         status: 'UNKNOWN',
-        last_updated: null,
+        last_updated: cached.last_updated,
       };
     }
-    return data;
+
+    const log = await this.statusLogModel.findOne({
+      where: { notification_id },
+      order: [['created_at', 'DESC']],
+    });
+    if (log) {
+      return {
+        notification_id,
+        status: log.status,
+        last_updated: log.updatedAt.toISOString(),
+      };
+    }
+    return {
+      notification_id,
+      status: 'UNKNOWN',
+      last_updated: null,
+    };
   }
 }

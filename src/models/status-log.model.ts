@@ -1,26 +1,35 @@
-import { Table, Column, Model, DataType, AllowNull } from "sequelize-typescript";
+import {
+  Table,
+  Column,
+  Model,
+  DataType,
+  AllowNull,
+  PrimaryKey,
+  Default,
+} from 'sequelize-typescript';
+
+interface StatusLogAttributes {
+  id?: string;
+  notification_id: string;
+  status: string;
+}
 
 @Table({
     tableName: "status_logs",
     timestamps: true,
+    underscored: true,
 })
-export class StatusLog extends Model<StatusLog> {
-    @Column({
-        type: DataType.UUID,
-        defaultValue: DataType.UUIDV4,
-        primaryKey: true,
-    })
+export class StatusLog extends Model<StatusLogAttributes, Omit<StatusLogAttributes, 'id'>> {
+    @PrimaryKey
+    @Default(DataType.UUIDV4)
+    @Column(DataType.UUID)
     declare id: string;
 
-    @Column({
-        type: DataType.STRING,
-        allowNull: false,
-    })
+    @AllowNull(false)
+    @Column(DataType.STRING)
     notification_id: string;
 
-    @Column({
-        type: DataType.STRING,
-        allowNull: false,
-    })
+    @AllowNull(false)
+    @Column(DataType.STRING)
     status: string;
 }
