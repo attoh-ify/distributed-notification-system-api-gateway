@@ -10,8 +10,26 @@ export class StatusService {
     @InjectModel(StatusLog) private readonly statusLogModel: typeof StatusLog,
   ) {}
 
+  async initStatus(notification_id: string) {
+    const timestamp = new Date().toISOString();
+
+    await this.redisClient.hset(
+      `notification:${notification_id}`,
+      'status',
+      'PENDING',
+      'last_updated',
+      timestamp,
+    );
+
+    await this.statusLogModel.create({
+      notification_id,
+      status: 'PENDING',
+    });
+  }
+
   async setStatus(notification_id: string, status: string) {
     const timestamp = new Date().toISOString();
+
     await this.redisClient.hset(
       `notification:${notification_id}`,
       'status',
@@ -20,10 +38,19 @@ export class StatusService {
       timestamp,
     );
 
-    await this.statusLogModel.create({
-      notification_id,
-      status,
+    const existing = await this.statusLogModel.findOne({
+      where: { notification_id },
     });
+
+    if (existing) {
+      existing.status = status;
+      await existing.save();
+    } else {
+      await this.statusLogModel.create({
+        notification_id,
+        status,
+      });
+    }
   }
 
   async getStatus(notification_id: string) {
@@ -33,7 +60,7 @@ export class StatusService {
     if (cached && cached.status) {
       return {
         notification_id,
-        status: 'UNKNOWN',
+        status: cached.status,
         last_updated: cached.last_updated,
       };
     }

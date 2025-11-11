@@ -3,13 +3,17 @@ import * as amqp from 'amqplib';
 import { ConfigService } from '@nestjs/config';
 import { v4 as uuidv4 } from 'uuid';
 import { MessageDto, NotificationDto } from 'src/dto/notification.dto';
+import { StatusService } from 'src/status/status.service';
 
 @Injectable()
 export class NotificationService implements OnModuleInit, OnModuleDestroy {
   private connection!: amqp.Connection;
   private channel!: amqp.Channel;
 
-  constructor(private readonly config: ConfigService) {}
+  constructor(
+    private readonly config: ConfigService,
+    private readonly statusService: StatusService,
+  ) {}
 
   async onModuleInit(): Promise<void> {
     const rabbitUrl = this.config.get<string>('rabbitmq.url');
@@ -31,8 +35,11 @@ export class NotificationService implements OnModuleInit, OnModuleDestroy {
   }
 
   async sendNotification(payload: NotificationDto) {
-    const { type, recipient, template_id, template_vars, title, body, data } = payload;
+    const { type, recipient, template_id, template_vars, title, body, data } =
+      payload;
     const notification_id = uuidv4();
+
+    await this.statusService.initStatus(notification_id);
 
     const message: MessageDto = {
       notification_id,
@@ -47,14 +54,19 @@ export class NotificationService implements OnModuleInit, OnModuleDestroy {
     };
 
     const queue =
-      type === 'email' ? this.config.get<string>('rabbitmq.email_queue') : type === 'push' ? this.config.get<string>('rabbitmq.push_queue') : null;
+      type === 'email'
+        ? this.config.get<string>('rabbitmq.email_queue')
+        : type === 'push'
+          ? this.config.get<string>('rabbitmq.push_queue')
+          : null;
+
     if (!queue) throw new Error('Invalid notification type');
 
     await this.channel.assertQueue(queue, {
       durable: true,
       arguments: {
         'x-dead-letter-exchange': 'notifications.direct',
-        'x-dead-letter-routing-key': 'failed.queue'
+        'x-dead-letter-routing-key': 'failed.queue',
       },
     });
     this.channel.sendToQueue(queue, Buffer.from(JSON.stringify(message)), {
