@@ -15,11 +15,11 @@ export default () => ({
   },
   database: {
     dialect: 'postgres',
-    host: process.env.DB_HOST || 'localhost',
+    host: process.env.DB_HOST || 'postgres',
     port: parseInt(process.env.DB_PORT || '5432', 10),
     username: process.env.DB_USER || 'postgres',
     password: process.env.DB_PASS || 'postgres',
-    name: process.env.DB_NAME || 'notifications',
+    name: process.env.DB_NAME || 'gateway_db',
   },
   rabbitmq: {
     url: process.env.RABBITMQ_URL || 'amqp://localhost:5672',
