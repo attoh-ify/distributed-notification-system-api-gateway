@@ -12,7 +12,6 @@ import Redis from 'ioredis';
           config.get<string>('redis.host') || 'redis://localhost:6379';
         const port = config.get<number>('redis.port') || 6379;
         const password = config.get<string>('redis.password');
-        console.log(host, port, password);
         return new Redis(port, host, { password });
       },
       inject: [ConfigService],

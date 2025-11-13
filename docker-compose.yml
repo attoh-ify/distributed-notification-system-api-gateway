@@ -1,0 +1,31 @@
+version: '3.9'
+
+services:
+  notification-gateway:
+    container_name: notification-gateway
+    build: .
+    restart: unless-stopped
+    ports:
+      - "3000:3000"
+    environment:
+      NODE_ENV: production
+      APP_NAME: notification-gateway
+      PORT: 3000
+      DB_HOST: your-postgres-host
+      DB_PORT: 5432
+      DB_USER: your-db-username
+      DB_PASS: your-db-password
+      DB_NAME: notifications
+      RABBITMQ_URL: amqp://your-rabbitmq-host:5672
+      REDIS_URL: redis://your-redis-host:6379
+      JWT_SECRET: supersecret
+      USER_SERVICE_URL: http://your-user-service
+      EMAIL_SERVICE_URL: http://your-email-service
+      PUSH_SERVICE_URL: http://your-push-service
+      TEMPLATE_SERVICE_URL: http://your-template-service
+    networks:
+      - app_network
+
+networks:
+  app_network:
+    driver: bridge

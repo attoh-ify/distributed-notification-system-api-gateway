@@ -10,6 +10,7 @@ import { NotificationModule } from './notification/notification.module';
 import { StatusModule } from './status/status.module';
 import { ConsumerModule } from './consumer/consumer.module';
 import { MiddlewareModule } from './middleware/gateway-middleware.module';
+import { ProxyModule } from './proxy/proxy.module';
 
 @Module({
   imports: [
@@ -40,6 +41,7 @@ import { MiddlewareModule } from './middleware/gateway-middleware.module';
     RabbitMQModule,
     RedisModule,
     MiddlewareModule,
+    ProxyModule,
     NotificationModule,
     StatusModule,
     ConsumerModule,
