@@ -82,13 +82,13 @@ export class ProxyController {
   ])
   proxyUser(@Req() req: Request, @Res() res: Response) {
     const rewrite = (url: string) => {
-      url = url.replace(/^\/register/, '/api/auth/register');
-      url = url.replace(/^\/login/, '/api/auth/login');
-      url = url.replace(/^\/auth\/profile/, '/api/auth/profile');
-      url = url.replace(/^\/users\/me/, '/api/users/me');
+      url = url.replace(/^\/register/, '/auth/register');
+      url = url.replace(/^\/login/, '/auth/login');
+      // url = url.replace(/^\/auth\/profile/, '/users/me');
+      url = url.replace(/^\/users\/me/, '/users/me');
       url = url.replace(
         /^\/users\/([^/]+)\/preferences/,
-        '/api/users/$1/preferences',
+        '/users/$1/preferences',
       );
       url = url.replace(/^\/users/, '/api/users');
       url = url.replace(/^\/user-health/, '/health');
