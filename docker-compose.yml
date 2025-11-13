@@ -8,21 +8,26 @@ services:
     ports:
       - "3000:3000"
     environment:
-      NODE_ENV: production
-      APP_NAME: notification-gateway
+      APP_NAME: api-gateway-service
       PORT: 3000
-      DB_HOST: your-postgres-host
-      DB_PORT: 5432
-      DB_USER: your-db-username
-      DB_PASS: your-db-password
-      DB_NAME: notifications
-      RABBITMQ_URL: amqp://your-rabbitmq-host:5672
-      REDIS_URL: redis://your-redis-host:6379
-      JWT_SECRET: supersecret
-      USER_SERVICE_URL: http://your-user-service
-      EMAIL_SERVICE_URL: http://your-email-service
-      PUSH_SERVICE_URL: http://your-push-service
-      TEMPLATE_SERVICE_URL: http://your-template-service
+      NODE_ENV: development
+      JWT_SECRET: f7655fa1e1aa865f3c8f409d573682ed840909f150cd7fa17ab72e7aac0ab69a6291d85f9c712a567970b64f41faaeb3b2327582b457d0c62ab53711c058b2ec
+      RABBITMQ_URL: amqps://agejrlss:JOBjERHe6l99I_j-GAbZcgpi-Ug_sCkC@stingray.rmq.cloudamqp.com/agejrlss
+      REDIS_URL: redis-15806.c98.us-east-1-4.ec2.redns.redis-cloud.com:15806
+      REDIS_PASSWORD: nge1EcQknCQdF5PCP0611bbo9LHh2WKK
+      REDIS_PORT: 15806
+      REDIS_HOST: redis-15806.c98.us-east-1-4.ec2.redns.redis-cloud.com
+      EMAIL_QUEUE=: email.queue
+      PUSH_QUEUE=: push.queue
+      DB_HOST=: localhost
+      DB_PORT=: 5432
+      DB_USER=: postgres
+      DB_PASS=: postgres
+      DB_NAME=: gateway_db
+      USER_SERVICE_URL=: http://distributed-notification-system-user-service-production.up.railway.app
+      EMAIL_SERVICE_URL=: http://email-service:3002
+      PUSH_SERVICE_URL=: http://push-service:3003
+      TEMPLATE_SERVICE_URL=: http://51.21.251.215
     networks:
       - app_network
 
