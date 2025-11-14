@@ -115,10 +115,6 @@ export class NotificationService implements OnModuleInit, OnModuleDestroy {
 
     await this.channel.assertQueue(queue, {
       durable: true,
-      arguments: {
-        'x-dead-letter-exchange': 'notifications.direct',
-        'x-dead-letter-routing-key': 'failed.queue',
-      },
     });
     this.channel.sendToQueue(queue, Buffer.from(JSON.stringify(message)), {
       persistent: true,
