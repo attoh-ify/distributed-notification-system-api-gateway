@@ -1,3 +1,6 @@
+import * as dotenv from "dotenv";
+dotenv.config();
+
 export default () => ({
   app: {
     name: process.env.APP_NAME || 'notification-gateway',
