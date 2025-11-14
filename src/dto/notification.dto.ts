@@ -1,5 +1,13 @@
 import { ApiProperty, ApiPropertyOptional } from '@nestjs/swagger';
 
+export class TemplateVarsDto {
+  @ApiProperty({ description: 'Language of the template', example: 'en' })
+  language: string;
+  
+  @ApiProperty({ description: 'User-defined variables for the template', type: Object, example: { name: 'Alex', reset_link: 'www.resetpassword.com' } })
+  variables: Record<string, any>;
+}
+
 export class NotificationDto {
   @ApiProperty({ enum: ['email', 'push'], description: 'Notification type' })
   type: 'email' | 'push';
@@ -16,11 +24,11 @@ export class NotificationDto {
   @ApiPropertyOptional({ description: 'Body of the notification (push notifications)' })
   body?: string;
 
-  @ApiPropertyOptional({ description: 'Template ID for email notifications' })
-  template_id?: string;
+  @ApiPropertyOptional({ description: 'Template key for email notifications' })
+  template_key?: string;
 
   @ApiPropertyOptional({ description: 'Variables to render in the template', type: Object })
-  template_vars?: Record<string, any>;
+  template_vars?: TemplateVarsDto;
 
   @ApiPropertyOptional({ description: 'Additional data for push notifications', type: Object })
   data?: Record<string, any>;

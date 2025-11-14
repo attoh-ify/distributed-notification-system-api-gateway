@@ -2,7 +2,11 @@ import { Injectable, OnModuleInit, OnModuleDestroy } from '@nestjs/common';
 import * as amqp from 'amqplib';
 import { ConfigService } from '@nestjs/config';
 import { v4 as uuidv4 } from 'uuid';
-import { MessageDto, NotificationDto } from 'src/dto/notification.dto';
+import {
+  MessageDto,
+  NotificationDto,
+  TemplateVarsDto,
+} from 'src/dto/notification.dto';
 import { StatusService } from 'src/status/status.service';
 import { HttpService } from '@nestjs/axios';
 import { firstValueFrom } from 'rxjs';
@@ -37,18 +41,27 @@ export class NotificationService implements OnModuleInit, OnModuleDestroy {
     console.log('🧹 RabbitMQ connection closed');
   }
 
-  async renderTemplate(template_id: string, vars: Record<string, any>) {
-    const templateServiceUrl = this.config.get<string>(
+  async renderTemplate(
+    template_key: string,
+    vars: TemplateVarsDto = {
+      language: 'en',
+      variables: {},
+    },
+  ) {
+    const template_service_url = this.config.get<string>(
       'services.template_service_url',
     );
 
-    const url = `${templateServiceUrl}/api/v1/render/${template_id}`;
-
+    const url = `${template_service_url}/api/v1/render/${template_key}`;
     try {
+      console.log(url, {
+        language: vars.language || 'en',
+        variables: vars.variables,
+      });
       const response = await firstValueFrom(
         this.http.post(url, {
           language: vars.language || 'en',
-          variables: vars,
+          variables: vars.variables,
         }),
       );
 
@@ -60,16 +73,24 @@ export class NotificationService implements OnModuleInit, OnModuleDestroy {
   }
 
   async sendNotification(payload: NotificationDto) {
-    const { type, sender, recipient, template_id, template_vars, title, body, data } =
-      payload;
+    const {
+      type,
+      sender,
+      recipient,
+      template_key,
+      template_vars,
+      title,
+      body,
+      data,
+    } = payload;
 
     const notification_id = uuidv4();
     await this.statusService.initStatus(notification_id);
 
     let finalBody = body;
 
-    if (type === 'email' && template_id) {
-      finalBody = await this.renderTemplate(template_id, template_vars || {});
+    if (type === 'email' && template_key) {
+      finalBody = await this.renderTemplate(template_key, template_vars);
     }
 
     const message: MessageDto = {
