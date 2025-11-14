@@ -109,7 +109,7 @@ export class ProxyController {
     const rewrite = (url: string) => {
       if (url.startsWith('/templates'))
         return url.replace(/^\/templates\/?(.*)$/, '/api/v1/templates/$1');
-      if (url.startsWith('/render')) return '/api/v1/render';
+      // if (url.startsWith('/render')) return '/api/v1/render/';
       if (url.startsWith('/template-health')) return '/';
       if (url.startsWith('/template-keepalive')) return '/internal/keepalive';
       return url;
